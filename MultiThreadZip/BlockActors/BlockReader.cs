@@ -28,10 +28,11 @@
                 using (var wr = new BinaryReader(fstream))
                 {
                     wr.BaseStream.Position = startPosition;
-                    int reallyReaded = wr.Read(block.Data, 0, count);
+                    wr.Read(block.Data, 0, count);
                 }
             }
 
+            block.Count = count;
             return true;
         }
 

@@ -8,6 +8,7 @@
         #region Constants
 
         public const int EXTRA_FIELD_LENGTH = 9;
+        private const int DATA_OFFSET = XLEN_OFFSET + EXTRA_FIELD_LENGTH;
         private const int EXTRA_DATA_OFFSET = 12;
 
         private const byte EXTRA_FIELD_OFFSET = 1 << 2;
@@ -58,11 +59,11 @@
             return count;
         }
 
-        public static byte[] GetHeaderWithLength(MemoryStream ms)
+        public static void GetHeaderWithLength(MemoryStream ms, Datablock trgBlock)
         {
             ms.Position = 0;
-            long sourceArrayLength = ms.Length + EXTRA_FIELD_LENGTH;
-            var array = new byte[sourceArrayLength];
+            int sourceArrayLength = (int)ms.Length + EXTRA_FIELD_LENGTH;
+            byte[] array = trgBlock.Data;
 
             ms.Read(array, 0, 10);
             for (var i = 0; i < header.Length; i++)
@@ -74,10 +75,9 @@
             array[XLEN_OFFSET + 7] = (byte)(sourceArrayLength >> 8);
             array[XLEN_OFFSET + 8] = (byte)(sourceArrayLength >> 16);
 
-            int resulOffset = XLEN_OFFSET + EXTRA_FIELD_LENGTH;
-            ms.Read(array, resulOffset, (int)sourceArrayLength - resulOffset);
+            ms.Read(array, DATA_OFFSET, sourceArrayLength - DATA_OFFSET);
 
-            return array;
+            trgBlock.Count = sourceArrayLength;
         }
 
         #endregion

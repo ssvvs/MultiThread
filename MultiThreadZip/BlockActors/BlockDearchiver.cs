@@ -5,29 +5,22 @@
 
     public class BlockDearchiver
     {
-        #region Constructors
-
-        #endregion
-
         #region Methods
 
-        public Datablock Decompress(Datablock src)
+        public void Decompress(Datablock src, Datablock trg)
         {
-            var trg = new Datablock();
-            long oLength = 0;
+            var oLength = 0;
             for (var i = 1; i <= 4; i++)
-                oLength = (oLength << 8) | src.Data[src.Data.Length - i];
+                oLength = (oLength << 8) | src.Data[src.Count - i];
+            trg.Count = oLength;
 
             using (var targetStream = new MemoryStream(src.Data))
             {
                 using (var compressionStream = new GZipStream(targetStream, CompressionMode.Decompress))
                 {
-                    trg.Data = new byte[oLength];
-                    int count = compressionStream.Read(trg.Data, 0, trg.Data.Length);
+                    compressionStream.Read(trg.Data, 0, trg.Count);
                 }
             }
-
-            return trg;
         }
 
         #endregion

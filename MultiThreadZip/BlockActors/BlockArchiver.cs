@@ -5,27 +5,19 @@
 
     public class BlockArchiver
     {
-        #region Constructors
-
-        #endregion
-
         #region Methods
 
-        public Datablock Compress(Datablock src)
+        public void Compress(Datablock src, Datablock trg)
         {
-            var trg = new Datablock();
-
             using (var targetStream = new MemoryStream())
             {
                 using (var compressionStream = new GZipStream(targetStream, CompressionMode.Compress, true))
                 {
-                    compressionStream.Write(src.Data, 0, src.Data.Length);
+                    compressionStream.Write(src.Data, 0, src.Count);
                 }
 
-                trg.Data = ArchiverHelper.GetHeaderWithLength(targetStream);
+                ArchiverHelper.GetHeaderWithLength(targetStream, trg);
             }
-
-            return trg;
         }
 
         #endregion

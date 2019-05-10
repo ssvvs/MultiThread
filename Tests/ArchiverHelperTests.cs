@@ -15,6 +15,7 @@
         [TestCase(10)]
         [TestCase(0xFF)]
         [TestCase(0xFFFF)]
+        [TestCase(1000000)]
         [TestCase(0xFFFFF6)]
         public void TestHeaderWithLegthAndLenthTest(int length)
         {
@@ -34,22 +35,26 @@
             for (var i = 10; i < length; i++)
                 srcArray[i] = (byte)r.Next();
 
-            byte[] arrayWithHeader;
+            var dataBlock = new Datablock
+            {
+                Count = length,
+                Data = new byte[length + ArchiverHelper.EXTRA_FIELD_LENGTH]
+            };
             using (var ms = new MemoryStream(srcArray))
             {
-                arrayWithHeader = ArchiverHelper.GetHeaderWithLength(ms);
+                ArchiverHelper.GetHeaderWithLength(ms, dataBlock);
             }
 
-            Assert.AreEqual(srcArray.Length + ArchiverHelper.EXTRA_FIELD_LENGTH, arrayWithHeader.Length);
-            Assert.AreNotEqual(srcArray[3], arrayWithHeader[3]);
+            Assert.AreEqual(srcArray.Length + ArchiverHelper.EXTRA_FIELD_LENGTH, dataBlock.Count);
+            Assert.AreNotEqual(srcArray[3], dataBlock.Data[3]);
 
             var resultCount = 0;
-            using (var ms = new MemoryStream(arrayWithHeader))
+            using (var ms = new MemoryStream(dataBlock.Data, 0, dataBlock.Count))
             {
                 resultCount = ArchiverHelper.GetBlockLegth(ms);
             }
 
-            Assert.AreEqual(arrayWithHeader.Length, resultCount);
+            Assert.AreEqual(dataBlock.Count, resultCount);
         }
 
         #endregion

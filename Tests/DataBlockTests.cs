@@ -21,6 +21,7 @@ namespace Tests
         [TestCase(1)]
         [TestCase(0xFF)]
         [TestCase(0xFFFF)]
+        [TestCase(1000000)]
         [TestCase(0xFFFFFF)]
         public void ReadWriteTest(int count)
         {
@@ -32,9 +33,7 @@ namespace Tests
             var testblock = new Datablock
             {
                 Data = testData,
-                Count = testData.Length,
-                StartPosition = 0,
-                Number = 1
+                Count = testData.Length
             };
 
             bw.Write(testblock, 0);
@@ -66,26 +65,43 @@ namespace Tests
         [TestCase(1)]
         [TestCase(0xFF)]
         [TestCase(0xFFFF)]
+        [TestCase(1000000)]
         [TestCase(0xFFFFFF)]
         public void ZipTest(int count)
         {
             var r = new Random();
-            var testData = new byte[count];
+            var testData = new byte[count + 30 * count];
             r.NextBytes(testData);
 
             var ar = new BlockArchiver();
             var testBlock = new Datablock
             {
                 Data = testData,
-                Count = 9,
-                StartPosition = 0,
-                Number = 1
+                Count = count
             };
-            Datablock compBlock = ar.Compress(testBlock);
+            var compBlock = new Datablock
+            {
+                Data = new byte[count + 30 * count],
+                Count = 0
+            };
+
+            ar.Compress(testBlock, compBlock);
 
             var dear = new BlockDearchiver();
-            Datablock decompr = dear.Decompress(compBlock);
-            CollectionAssert.AreEqual(testBlock.Data, decompr.Data);
+            var decompr = new Datablock
+            {
+                Data = new byte[count + 30 * count],
+                Count = 0
+            };
+            dear.Decompress(compBlock, decompr);
+
+            byte[] actualData = decompr.Data;
+            Array.Resize(ref actualData, decompr.Count);
+
+            byte[] awaitData = testData;
+            Array.Resize(ref awaitData, count);
+
+            CollectionAssert.AreEqual(awaitData, actualData);
         }
 
         #endregion

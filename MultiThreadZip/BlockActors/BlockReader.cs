@@ -4,25 +4,37 @@
 
     public class BlockReader
     {
-        private string _filepath;
+        #region Fields
+
+        private readonly string _filepath;
+
+        #endregion
+
+        #region Constructors
 
         public BlockReader(string filepath)
         {
             _filepath = filepath;
         }
 
+        #endregion
+
+        #region Methods
+
         public bool Read(Datablock block, long startPosition, int count)
         {
-            using (var fstream = File.OpenRead(_filepath))
+            using (FileStream fstream = File.OpenRead(_filepath))
             {
-                using (BinaryReader wr = new BinaryReader(fstream))
+                using (var wr = new BinaryReader(fstream))
                 {
                     wr.BaseStream.Position = startPosition;
                     int reallyReaded = wr.Read(block.Data, 0, count);
-
                 }
             }
+
             return true;
         }
+
+        #endregion
     }
 }

@@ -1,28 +1,38 @@
-﻿using System.IO;
-
-namespace MultiThreadZip.BlockActors
+﻿namespace MultiThreadZip.BlockActors
 {
+    using System.IO;
+
     public class BlockWriter
     {
-        private string _filepath;
+        #region Fields
+
+        private readonly string _filepath;
+
+        #endregion
+
+        #region Constructors
 
         public BlockWriter(string filepath)
         {
             _filepath = filepath;
         }
 
+        #endregion
+
+        #region Methods
+
         public void Write(Datablock block, long startPosition)
         {
-            using (var fstream = File.OpenWrite(_filepath))
+            using (FileStream fstream = File.OpenWrite(_filepath))
             {
-                using (BinaryWriter wr = new BinaryWriter(fstream))
+                using (var wr = new BinaryWriter(fstream))
                 {
                     wr.BaseStream.Position = startPosition;
                     wr.Write(block.Data, 0, block.Count);
                 }
             }
         }
+
+        #endregion
     }
-
-
 }

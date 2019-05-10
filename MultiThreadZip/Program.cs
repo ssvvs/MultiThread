@@ -1,12 +1,16 @@
-﻿using System;
-
-namespace MultiThreadZip
+﻿namespace MultiThreadZip
 {
-    class Program
+    using System;
+
+    internal class Program
     {
-        static void Main(string[] args)
+        #region Methods
+
+        private static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
         }
+
+        #endregion
     }
 }

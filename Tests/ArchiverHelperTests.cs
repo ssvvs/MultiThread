@@ -1,22 +1,26 @@
 ﻿namespace Tests
 {
-    using MultiThreadZip;
-    using NUnit.Framework;
     using System;
     using System.IO;
+
+    using MultiThreadZip;
+
+    using NUnit.Framework;
 
     [TestFixture]
     public class ArchiverHelperTests
     {
+        #region Methods
+
         [TestCase(10)]
         [TestCase(0xFF)]
         [TestCase(0xFFFF)]
         [TestCase(0xFFFFF6)]
         public void TestHeaderWithLegthAndLenthTest(int length)
         {
-            Random r = new Random();
+            var r = new Random();
 
-            byte[] srcArray = new byte[length];            
+            var srcArray = new byte[length];
             srcArray[0] = 31;
             srcArray[1] = 139;
             srcArray[2] = 8;
@@ -27,13 +31,11 @@
             srcArray[7] = 0;
             srcArray[8] = 4;
             srcArray[9] = 0;
-            for(int i = 10; i < length; i++)
-            {
+            for (var i = 10; i < length; i++)
                 srcArray[i] = (byte)r.Next();
-            }
 
             byte[] arrayWithHeader;
-            using (MemoryStream ms = new MemoryStream(srcArray))
+            using (var ms = new MemoryStream(srcArray))
             {
                 arrayWithHeader = ArchiverHelper.GetHeaderWithLength(ms);
             }
@@ -41,13 +43,15 @@
             Assert.AreEqual(srcArray.Length + ArchiverHelper.EXTRA_FIELD_LENGTH, arrayWithHeader.Length);
             Assert.AreNotEqual(srcArray[3], arrayWithHeader[3]);
 
-            int resultCount = 0;
-            using (MemoryStream ms = new MemoryStream(arrayWithHeader))
+            var resultCount = 0;
+            using (var ms = new MemoryStream(arrayWithHeader))
             {
                 resultCount = ArchiverHelper.GetBlockLegth(ms);
             }
-            Assert.AreEqual(arrayWithHeader.Length, resultCount);
 
-        }  
+            Assert.AreEqual(arrayWithHeader.Length, resultCount);
+        }
+
+        #endregion
     }
 }
